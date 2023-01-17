@@ -1,6 +1,7 @@
 <?php
-@include ('./UserCollection.php');
-@include ('./User.php');
+error_reporting(E_ALL ^ E_WARNING);
+include ('./UserCollection.php');
+include ('./User.php');
 
     if (isset($_GET['print']))
     {
@@ -88,39 +89,32 @@
 <body>
     <div class="main">
         <h1>Hello from TestAPI</h1>
-        <a class="createCSV" href="<?=$_SERVER['PHP_SELF']?>?print=yes">Create CSV</a>
         <?php
-        $curl = curl_init();
-        $endpoint = "https://jsonplaceholder.typicode.com/users";
+        $userCollection = getUserCollection();
 
-        curl_setopt($curl, CURLOPT_URL, $endpoint);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $response = curl_exec($curl);
-        curl_close($curl);
+        if ($userCollection) { ?>
+            <a class="createCSV" href="<?=$_SERVER['PHP_SELF']?>?print=yes">Create CSV</a>
+            <?php
+            //Display users
+            foreach ($userCollection as $object) {
+                $row = [];
+                $name = explode(' ', $object->getName());
 
-        $decodedText = html_entity_decode($response);
-        $responseArray = json_decode($decodedText, true);
-
-        $userCollection = new UserCollection();
-        foreach ($responseArray as $user)
-        {
-            $userCollection->add(new User($user));
+                echo 'NAME PREFIX: ' . $object->getNamePrefix() . '<br>';
+                echo 'FIRST NAME: ' . $object->getFirstName() . '<br>';
+                echo 'SURNAME: ' . $object->getLastName() . '<br>';
+                echo 'NUMBER IS: ' . $object->getPhone() . '<br>';
+                echo 'EXTENSION IS: ' . $object->getPhoneExtension() . '<br>';
+                echo 'EMAIL IS: ' . $object->getEmail() . '<br>';
+                echo 'EMAIL VALID: ' . $object->getEmailValid() . '<br>';
+                echo 'CITY: ' . $object->getAddress()['city'];
+                echo '<br>--------------------------------------------<br>';
+            }
         }
-
-        //Display users
-        foreach ($userCollection as $object) {
-            $row = [];
-            $name = explode(' ',$object->getName());
-
-            echo 'NAME PREFIX: '.$object->getNamePrefix().'<br>';
-            echo 'FIRST NAME: '.$object->getFirstName().'<br>';
-            echo 'SURNAME: '.$object->getLastName().'<br>';
-            echo 'NUMBER IS: '.$object->getPhone().'<br>';
-            echo 'EXTENSION IS: '.$object->getPhoneExtension().'<br>';
-            echo 'EMAIL IS: '.$object->getEmail().'<br>';
-            echo 'EMAIL VALID: '.$object->getEmailValid().'<br>';
-            echo 'CITY: '.$object->getAddress()['city'];
-            echo '<br>--------------------------------------------<br>';
+        else
+        { ?>
+            <h3>There are no Users Available</h3>
+        <?php
         } ?>
     </div>
 </body>
