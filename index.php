@@ -97,7 +97,6 @@ include ('./User.php');
             <?php
             //Display users
             foreach ($userCollection as $object) {
-                $row = [];
                 $name = explode(' ', $object->getName());
 
                 echo 'NAME PREFIX: ' . $object->getNamePrefix() . '<br>';
